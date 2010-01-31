@@ -2,11 +2,8 @@
   xmlns="http://www.w3.org/2001/XMLSchema"
   xmlns:whois="http://rxsd.domain-registry.nl/sidn-whois-drs50"
   targetNamespace="http://rxsd.domain-registry.nl/sidn-whois-drs50"
-
-  schemaLocation="http://rxsd.domain-registry.nl/sidn-whois-drs50.xsd"
   elementFormDefault="qualified"
-
-  version="2010-01-18"
+  version="2010-01-29"
 >
 
 <!-- please read the document which explains this schema, available from
@@ -27,13 +24,10 @@
 
   <complexType name="anyQueryType">
     <sequence>
-      <element name="lang" type="language"
-         default="en-UK" />
-      <element name="output-format"
-         type="whois:outputFormatType"
+      <element name="lang" type="language" default="en-UK" />
+      <element name="output-format"   type="whois:outputFormatType"
          default="xml" />
-      <element name="usertext-format"
-         type="whois:textFormatType"
+      <element name="usertext-format" type="whois:textFormatType"
          default="plain" />
     </sequence>
   </complexType>
@@ -66,7 +60,7 @@
       <extension base="string">
         <attribute name="class"  type="whois:businessClassType" />
         <attribute name="lang"   type="language" />
-        <attribute name="format" type="whois:userTextType"
+        <attribute name="format" type="whois:textFormatType"
            fixed="plain" />
       </extension>
     </simpleContent>
@@ -98,7 +92,7 @@
           <element name="domicile-sidn" type="whois:userTextType"
              minOccurs="0" />
         </sequence>
-        <attribute name="id"      type="whois:contactRefType"
+        <attribute name="id"      type="whois:contactLabelType"
            use="required"  />
         <attribute name="view"    type="whois:contactViewType"
            default="no"    />
@@ -256,8 +250,8 @@
   
   <complexType name="isResponseType">
     <choice>
-      <element name="fault"  ref="whois:fault"     />
-      <element name="status" ref="whois:is-status" /> 
+      <element ref="whois:fault"     />
+      <element ref="whois:is-status" /> 
     </choice>
   </complexType>
 
