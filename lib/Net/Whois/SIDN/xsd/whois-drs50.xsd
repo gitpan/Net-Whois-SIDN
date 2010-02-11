@@ -3,7 +3,7 @@
   xmlns:whois="http://rxsd.domain-registry.nl/sidn-whois-drs50"
   targetNamespace="http://rxsd.domain-registry.nl/sidn-whois-drs50"
   elementFormDefault="qualified"
-  version="2010-01-29"
+  version="2010-02-10"
 >
 
 <!-- please read the document which explains this schema, available from
@@ -35,7 +35,7 @@
   <simpleType name="businessClassType">
     <restriction base="token">
       <enumeration value="ANDERS"      />
-      <enumeration value="BEG"         />
+      <enumeration value="BGG"         />
       <enumeration value="BRO"         />
       <enumeration value="BV"          />
       <enumeration value="BVI/O"       />
