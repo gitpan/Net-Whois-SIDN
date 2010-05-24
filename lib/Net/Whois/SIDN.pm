@@ -4,7 +4,7 @@ use strict;
 package Net::Whois::SIDN;
 use base 'XML::Compile::Cache';
 
-our $VERSION = '0.94';
+our $VERSION = '0.95';
 
 use XML::Compile::Util qw/type_of_node unpack_type pack_type/;
 use Log::Report    'net-whois-sidn', syntax => 'SHORT';
