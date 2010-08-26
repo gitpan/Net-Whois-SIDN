@@ -3,7 +3,7 @@
   xmlns:whois="http://rxsd.domain-registry.nl/sidn-whois-drs50"
   targetNamespace="http://rxsd.domain-registry.nl/sidn-whois-drs50"
   elementFormDefault="qualified"
-  version="2010-05-18"
+  version="2010-08-25"
 >
 
 <!-- please read the document which explains this schema, available from
@@ -220,7 +220,7 @@
 
   <simpleType name="hostRefType">
     <restriction base="token">
-      <pattern value="[a-z0-9.]+\.[a-z]{2,}" />
+      <pattern value="[a-z0-9.-]+\.[a-z]{2,}" />
     </restriction>
   </simpleType>
 

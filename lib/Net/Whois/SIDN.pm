@@ -4,7 +4,7 @@ use strict;
 package Net::Whois::SIDN;
 use base 'XML::Compile::Cache';
 
-our $VERSION = '0.95';
+our $VERSION = '0.96';
 
 use XML::Compile::Util qw/type_of_node unpack_type pack_type/;
 use Log::Report    'net-whois-sidn', syntax => 'SHORT';
@@ -15,7 +15,6 @@ use LWP::UserAgent ();
 
 my $service_public     = 'http://whois.domain-registry.nl';
 my $service_registered = 'http://rwhois.domain-registry.nl';
-my $service_encrypted  = 'https://rwhois.domain-registry.nl';
 
 =head1 NAME
 
@@ -40,8 +39,12 @@ Net::Whois::SIDN;
 =head1 DESCRIPTION
 
 Implementation (both usable for client and server side), of the XML
-version of the whois interface, as provided by the Dutch TLDcc
+version of the whois interface, as provided by the Dutch ccTLD
 registry SIDN (the C<.nl> top-level domain).
+
+Documentation is included in this distribution (in the F<doc/>
+directory), and in nicely printed form via the ISP participants
+wiki. Don't forget to look at the F<examples/> directory.
 
 =cut
 
@@ -71,19 +74,24 @@ application.  In that case, SIDN will provide a test environment with
 a server using a newer scheme before the change goes public.
 
 With options C<role> set to C<SERVER>, you will accept queries and produce
-responses.  For all other values, the module behaves as client The default
-role is C<PUBLIC>. Other client roles are C<REGISTRAR>, C<CSI>, and C<CA>.
+responses.  For all other values, the module behaves as client. The
+default role is C<REGISTERED>. The other valid value is C<PUBLIC>. however
+SIDN does not (yet) support XML output on the public interface.
 
 Option C<service> changes the url of the default server which will answer
 the queries. You may pass your own C<user_agent> (an L<LWP::UserAgent>
 instance).
 
+Use option C<trace>, set to a trueth value, to see the message sent and
+received. Client-side only.
+
 This object extents L<XML::Compile::Cache>, so there are a lot of additional
 parameters.  However, you will probably not need them.
 
+
 =cut
 
-my %roles = map { $_ => 1 } qw/SERVER PUBLIC REGISTRAR CSI CA/;
+my %roles = map { $_ => 1 } qw/SERVER PUBLIC REGISTERED/;
 
 sub new($)
 {   my $class = shift;
@@ -119,7 +127,7 @@ sub init($)
     (my $xsd = __FILE__) =~ s!\.pm!/xsd/whois-drs$version.xsd!;
     $self->importDefinitions($xsd);
 
-    my $role = $self->{role} = $args->{role} || 'PUBLIC';
+    my $role = $self->{role} = $args->{role} || 'REGISTERED';
     $roles{$role}
         or error __x"no such role: `{role}'", role => $role;
 
@@ -130,12 +138,14 @@ sub init($)
     }
     else
     {   # configure as client
-        ($cs, $ss)  = ('WRITER', 'READER');
-        $self->{ua} = $args->{user_agent} || LWP::UserAgent->new;
+        ($cs, $ss)    = ('WRITER', 'READER');
+        $self->{ua}   = $args->{user_agent} || LWP::UserAgent->new;
         $self->{service} = $args->{service} ||
           ( $role eq 'PUBLIC'     ? $service_public
           : $role eq 'REGISTERED' ? $service_registered
-          :                         $service_encrypted );
+          :                         undef
+          );
+        $self->{trace} = $args->{trace};
     }
 
     $self->declare($cs, [ qw/whois:whois-query    whois:is-query/    ]);
@@ -217,20 +227,26 @@ sub _call($$)
         ]
       , $xmlout->toString(1)
       );
+
+    print "\n==> Request\n", $request->as_string
+        if $self->{trace};
+
     my $response = $self->userAgent->request($request);
+    print "\n--> Response\n", $response->as_string
+        if $self->{trace};
+
+    my $content  = $response->decoded_content || $response->content;
 
     my $rc = $response->code;
     $rc == RC_OK
         or return ($rc, "Error: $rc = "
-           . ($response->header('Client-Warnings') || $response->message));
+           . ($response->header('Client-Warnings') || $content));
 
     my $ct = $response->content_type;
     $ct eq 'text/xml'
         or return (-1, "Error: expect xml, but got $ct");
 
-    my ($type, $data_in) = $self->from
-      ( $response->decoded_content || $response->content );
-
+    my ($type, $data_in) = $self->from($content);
     (0, $data_in);
 }
 
@@ -303,6 +319,7 @@ sub from($@)
 
     my $xml  = XML::Compile->dataToXML($source);
     my $top  = type_of_node $xml;
+
     my ($ns, $topname) = unpack_type $top;
     my $version = $ns2version{$ns}
        or error __x"unknown version with namespace {ns}", ns => $ns;
