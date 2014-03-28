@@ -3,7 +3,7 @@
   xmlns:whois="http://rxsd.domain-registry.nl/sidn-whois-drs50"
   targetNamespace="http://rxsd.domain-registry.nl/sidn-whois-drs50"
   elementFormDefault="qualified"
-  version="2010-08-25"
+  version="2011-04-01"
 >
 
 <!-- please read the document which explains this schema, available from
@@ -173,9 +173,9 @@
           <element name="contact-details"
              type="whois:contactDetailsType"
              minOccurs="0" />
-          <element name="registered"  type="date"
+          <element name="registered"  type="whois:timestampType"
              minOccurs="0" />
-          <element name="last-change" type="date"
+          <element name="last-change" type="whois:timestampType"
              minOccurs="0" />
         </sequence>
   
@@ -344,7 +344,8 @@
       <element name="code"    type="whois:statusCodeType" />
       <element name="explain" type="whois:userTextType"   />
       <choice minOccurs="0">
-        <element name="domain-release-date" type="date"   />
+        <element name="domain-release-date"
+                              type="whois:timestampType"  />
       </choice>
     </sequence>
   </complexType>
@@ -366,6 +367,10 @@
       <enumeration value="plain" />
       <enumeration value="html"  />
     </restriction>
+  </simpleType>
+
+  <simpleType name="timestampType">
+    <union memberTypes="date dateTime" />
   </simpleType>
 
   <complexType name="userTextType">

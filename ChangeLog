@@ -1,8 +1,15 @@
 
-====== history of Net::Whois::SIDN
+====== history of Net-Whois-SIDN
+
+version 0.98: Fri Mar 28 13:12:08 CET 2014
+	- fix documentation name of the module
+
+version 0.97: Wed Mar 23 17:26:03 CET 2011
+	- timestamps can be either a date or a dateTime
+	- schema 2011-04-01
 
 version 0.96: Thu Aug 26 08:54:08 CEST 2010
-	- the "role" options was broken.
+	- the "role" option was broken.
 	- better examples.
 	- schema 2010-08-25
 	- add documentation to distribution

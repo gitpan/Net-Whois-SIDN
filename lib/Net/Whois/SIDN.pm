@@ -4,7 +4,7 @@ use strict;
 package Net::Whois::SIDN;
 use base 'XML::Compile::Cache';
 
-our $VERSION = '0.96';
+our $VERSION = '0.98';
 
 use XML::Compile::Util qw/type_of_node unpack_type pack_type/;
 use Log::Report    'net-whois-sidn', syntax => 'SHORT';
@@ -18,7 +18,7 @@ my $service_registered = 'http://rwhois.domain-registry.nl';
 
 =head1 NAME
 
-Net::Whois::SIDN;
+Net::Whois::SIDN - whois for .nl TLD via XML interface
 
 =head1 INHERITANCE
 
